@@ -55,7 +55,7 @@ void setup() {
   /*motorWrite(PWM2,0);
     motorWrite(PWM3,0);
     motorWrite(PWM4,0);*/
-}
+
 /*void reverse(int dutyCycle) { //move all motors backwards at same speed
   digitalWrite(12,0);
   digitalWrite(11,1);
@@ -70,7 +70,7 @@ void setup() {
     motorWrite(PWM3,0);
     motorWrite(PWM4,0);*/
 
-}
+
 /*void right(int dutyCycle){ //move the two front
   //digitalWrite(hb1,1);
   //digitalWrite(hb2,0);
@@ -106,82 +106,102 @@ void motorWrite(int PWM, int dutyCycle) { //write to the 4 motors
 
 }
 
-char userinp =NULL;
+
 
 void loop() {
   // put your main code here, to run repeatedly:
   Serial.print("Input which function to run from the following options: \n");
   Serial.print("forward, reverse, right, left \n");
   
-  //forward(255);
-  digitalWrite(12,1);
-  digitalWrite(11,0);
-  digitalWrite(13,HIGH);
-  digitalWrite(10,HIGH);
-  delay(5000);
-
-  //brake, stop
-  digitalWrite(12,0);
-  digitalWrite(11,0);
-  delay(2000);
-  
- 
-  //reverse
-  digitalWrite(12,0);
-  digitalWrite(11,1);
-  digitalWrite(13,HIGH);
-  digitalWrite(10,HIGH);
-  delay(5000); 
-
-  
-  //brake, stop
-  digitalWrite(12,0);
-  digitalWrite(11,0);
-  delay(2000);
-
-
-  //left
-  digitalWrite(12,1);
-  digitalWrite(11,0);
-  digitalWrite(13,HIGH);
-  //digitalWrite(10,HIGH);
-  delay(5000);
-
-  //brake, stop
-  digitalWrite(12,0);
-  digitalWrite(11,0);
-  delay(2000);
-  //analogWrite(3,100);//analogyWrite(pin#,0-255)
+//  //forward(255);
+//  digitalWrite(12,1);
+//  digitalWrite(11,0);
+//  digitalWrite(13,HIGH);
+//  digitalWrite(10,HIGH);
+//  delay(5000);
+//
+//  //brake, stop
+//  digitalWrite(12,0);
+//  digitalWrite(11,0);
+//  delay(2000);
+//  
+// 
+//  //reverse
+//  digitalWrite(12,0);
+//  digitalWrite(11,1);
+//  digitalWrite(13,HIGH);
+//  digitalWrite(10,HIGH);
+//  delay(5000); 
+//
+//  
+//  //brake, stop
+//  digitalWrite(12,0);
+//  digitalWrite(11,0);
+//  delay(2000);
+//
+//
+//  //left
+//  digitalWrite(12,1);
+//  digitalWrite(11,0);
+//  digitalWrite(13,HIGH);
+//  //digitalWrite(10,HIGH);
+//  delay(5000);
+//
+//  //brake, stop
+//  digitalWrite(12,0);
+//  digitalWrite(11,0);
+//  delay(2000);
+//  //analogWrite(3,100);//analogyWrite(pin#,0-255)
 
   //right
-  digitalWrite(12,1);
-  digitalWrite(11,0);
-  //digitalWrite(13,HIGH);
-  digitalWrite(10,HIGH);
-  delay(5000);
+//  digitalWrite(12,1);
+//  digitalWrite(11,0);
+//  //digitalWrite(13,HIGH);
+//  digitalWrite(10,HIGH);
+//  delay(5000);
  
   
   //motorWrite(13, 255); //figure out a way to reverse the direction ---- 150 = medium speed, 255 = max
 
-  while(!Serial.available());
+    while(!Serial.available());
 
     
-/*if(Serial.available()){
-    Serial.print(Serial.readString());
-    Serial.readString().toCharArray(buffer, serial.Read.length());//convert string to char
-    int BUFSIZE = sizeof(Serial.readString); // size of buffer
-    userinp = Serial.read();
-    Serial.println("I received: ");
-    Serial.print(userinp, DEC);
-    if (userinp == "forward")
-      forward(255); //all motors will initially be set to high for proof of concept
-    else if (userinp == "reverse")
-      reverse(255);
-    else if (userinp == "right")
-    right(255);
-    else if (userinp == "left")
-    left(255);
-    else
-      Serial.println("Invalid Input. \n");*/
+    if(Serial.available()){
+        String s = Serial.readString();
+        if(s != "forward" && s != "left"&&s!="right"&&s!="reverse"){
+            Serial.println("Not Understood");
+            
+        }
+        else{
+          Serial.println("Enter duty:");
+          while(!Serial.available());
+          int duty = Serial.parseInt();
+        }
+        
+       
+        
+          if(s == "forward"){
+              Serial.println("Forward");
+              
+          }
+          else if(s == "backward"){
+        
+              Serial.println("Backward");
+
+          }
+          else if(s =="left"){
+            Serial.println("left");
+          }
+          else if(s == "right"){
+            Serial.println("right");
+          }
+              
+
+        }
+
+ }
+    
+    
+    
  
-}
+
