@@ -55,7 +55,7 @@ void setup() {
   /*motorWrite(PWM2,0);
     motorWrite(PWM3,0);
     motorWrite(PWM4,0);*/
-//}
+}
 /*void reverse(int dutyCycle) { //move all motors backwards at same speed
   digitalWrite(12,0);
   digitalWrite(11,1);
@@ -70,7 +70,7 @@ void setup() {
     motorWrite(PWM3,0);
     motorWrite(PWM4,0);*/
 
-//}
+}
 /*void right(int dutyCycle){ //move the two front
   //digitalWrite(hb1,1);
   //digitalWrite(hb2,0);
@@ -93,7 +93,7 @@ void setup() {
   motorWrite(PWM3,0);
   motorWrite(PWM4,0);
   }*/
-/*void motorWrite(int PWM, int dutyCycle) { //write to the 4 motors
+void motorWrite(int PWM, int dutyCycle) { //write to the 4 motors
   //const int PWM1 = 10; //left front motor
   //const int PWM2 = 11; //right front motor
   //const int PWM3 = 12; //left rear motor
@@ -102,111 +102,68 @@ void setup() {
   analogWrite(PWM, dutyCycle);
   //analogWrite(PWM2,dutyCycle);
   //analogWrite(PWM3,dutyCycle);
-  //analogWrite(PWM4,dutyCycle);*/
+  //analogWrite(PWM4,dutyCycle);
 
-//}
+}
 
 char userinp =NULL;
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //Serial.print("Input which function to run from the following options: \n");
-  //Serial.print("forward, reverse, right, left \n");
-
-  /*
-   *****H-Bridge Input Table*************
-   
-          0 - IN3(pin11) 0 - IN4(pin12) Brake
-          0 - IN3 1 - IN4 Forward
-          1 - IN3 0 - IN4 Reverse
-          1 - IN3 1 - IN4 Brake
-
-  ****************************************
-  */
-
-  /*
-   *****H-Bridge Input Table*************
-   
-          0 - IN1(pin 8) 0 - IN2(pin 9) Brakem
-          0 - IN1 1 - IN2 Forward
-          1 - IN1 0 - IN2 Reverse
-          1 - IN1 1 - IN2 Brake
-
-  ****************************************
-  */
+  Serial.print("Input which function to run from the following options: \n");
+  Serial.print("forward, reverse, right, left \n");
   
   //forward(255);
-  digitalWrite(12,HIGH); //1     11,12 control right motor
-  digitalWrite(11,LOW);  //0
-  digitalWrite(13,HIGH); //right motor
-  digitalWrite(9,HIGH);  //1    8,9 control left motor
-  digitalWrite(8,LOW);   //0
-  digitalWrite(10,HIGH); //left motor
+  digitalWrite(12,1);
+  digitalWrite(11,0);
+  digitalWrite(13,HIGH);
+  digitalWrite(10,HIGH);
   delay(5000);
 
   //brake, stop
-  digitalWrite(12,LOW); //right
-  digitalWrite(11,LOW);
-  digitalWrite(9,LOW); //left
-  digitalWrite(8,LOW);
+  digitalWrite(12,0);
+  digitalWrite(11,0);
   delay(2000);
   
  
   //reverse
-  digitalWrite(12,LOW);  //0
-  digitalWrite(11,HIGH); //1
-  digitalWrite(13,HIGH); //right
-  digitalWrite(9,LOW);   //0
-  digitalWrite(8,HIGH);  //1
-  digitalWrite(10,HIGH); //left
+  digitalWrite(12,0);
+  digitalWrite(11,1);
+  digitalWrite(13,HIGH);
+  digitalWrite(10,HIGH);
   delay(5000); 
 
   
   //brake, stop
-  digitalWrite(12,LOW);//right
-  digitalWrite(11,LOW);
-  digitalWrite(9,LOW); //left
-  digitalWrite(8,LOW);
+  digitalWrite(12,0);
+  digitalWrite(11,0);
   delay(2000);
 
 
-  //left --- right motor moves forward, left motor stationary
-  digitalWrite(12,HIGH);  //1
-  digitalWrite(11,LOW);   //0
-  digitalWrite(13,HIGH); //right
-  digitalWrite(9,LOW);    //0
-  digitalWrite(8,LOW);    //0
-  digitalWrite(10,HIGH); //left
-  delay(2000);
+  //left
+  digitalWrite(12,1);
+  digitalWrite(11,0);
+  digitalWrite(13,HIGH);
+  //digitalWrite(10,HIGH);
+  delay(5000);
 
   //brake, stop
-  digitalWrite(12,LOW);
-  digitalWrite(11,LOW);
-  digitalWrite(9,LOW);
-  digitalWrite(8,LOW);
+  digitalWrite(12,0);
+  digitalWrite(11,0);
   delay(2000);
   //analogWrite(3,100);//analogyWrite(pin#,0-255)
 
-  //right --- left motor moves forward, right motor stationary
-  digitalWrite(12,LOW); //0
-  digitalWrite(11,LOW); //0
-  digitalWrite(13,HIGH); //right
-  digitalWrite(9,HIGH); //1
-  digitalWrite(8,LOW);  //0
-  digitalWrite(10,HIGH); //left
-  delay(2000);
-
-  //brake, stop
-  digitalWrite(12,LOW);//right
-  digitalWrite(11,LOW);
-  digitalWrite(9,LOW); //left
-  digitalWrite(8,LOW);
-  delay(2000);
+  //right
+  digitalWrite(12,1);
+  digitalWrite(11,0);
+  //digitalWrite(13,HIGH);
+  digitalWrite(10,HIGH);
+  delay(5000);
  
   
   //motorWrite(13, 255); //figure out a way to reverse the direction ---- 150 = medium speed, 255 = max
 
-  //while(!Serial.available());
+  while(!Serial.available());
 
     
 /*if(Serial.available()){
