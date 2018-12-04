@@ -173,7 +173,6 @@ void loop() {
                 
               Serial.println("Right function Completed.\n");
           }
-
         }
 
 }
