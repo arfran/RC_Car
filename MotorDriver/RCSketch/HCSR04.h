@@ -3,7 +3,7 @@ class HCSR04{
 	
 	private:
 		int triggerPin;
-		int echoPin;
+		s_pin echoPin;
 	public:
 		void setTrigger();
 		float ping();

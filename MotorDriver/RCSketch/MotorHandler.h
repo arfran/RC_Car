@@ -6,6 +6,7 @@ class MotorHandler{
 	  void motorReverse(int duty);
 	  void motorLeft(int duty);
 	  void motorRight(int duty);
+    void motorStop();
 	  MotorHandler();
 
    private:

@@ -56,3 +56,11 @@ MotorHandler::MotorHandler(){
   pinMode(19,OUTPUT); //IN1
   
 }
+
+void MotorHandler::motorStop(){
+  analogWrite(14,0);
+  analogWrite(15,0);
+
+}
+
+

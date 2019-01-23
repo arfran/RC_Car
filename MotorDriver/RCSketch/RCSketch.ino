@@ -16,6 +16,7 @@
 int duty=0;
 
 byte dimmerValue=0;
+int timeOut =0;
 
 typedef enum {
       STOP = 0,
@@ -30,10 +31,14 @@ typedef enum {
 }Action;
 MotorHandler handler;
 HCSR04 sensorHandler;
-//ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter,setter));
+ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
+ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter , setter));
+ZUNO_SETUP_ISR_INT0(Encoder_handlerOne);
+ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo);
 
 Action state;
 void setter(byte newValue){
+    dimmerValue = newValue;
     switch(newValue){
       case 0:
         state = STOP;
@@ -67,12 +72,9 @@ byte getter(void){
 
 void setup() {
   Serial.begin(9600);
-//  pinMode(15,OUTPUT); //enable B pin, and motor pwm pin (controls speed)
-//  pinMode(22,OUTPUT); //H-Bridge pin IN4
-//  pinMode(21,OUTPUT); //H-Bridge pin IN3
-//  pinMode(14,OUTPUT);//enable A pin
-//  pinMode(20,OUTPUT); //IN2
-//  pinMode(19,OUTPUT); //IN1
+  zunoExtIntMode(ZUNO_EXT_INT0, RISING);
+  zunoExtIntMode(ZUNO_EXT_INT1, RISING);
+  
   
   
   
@@ -109,6 +111,7 @@ void loop(){
 
     switch(state){
         case STOP:
+            handler.motorStop();
             break;
         case LEFT:
             handler.motorLeft(255);
@@ -127,12 +130,30 @@ void loop(){
 
       
     }
+
+    
   
 
   
 
 
 
+  
+}
+
+void timer_handler(){
+
+   if(timeOut == 300){
+      sensorHandler.setTrigger();
+      Serial.println(sensorHandler.ping());
+   }
+   timeOut = (timeOut+1)%301;
+}
+
+void Encoder_handlerOne(){
+
+}
+void Encoder_handlerTwo(){
   
 }
 
