@@ -5,7 +5,7 @@
  * Modifications to accompany the change from the Arduino 101 microcontroller
  * to the Z-Uno development board
  * 
- * Written by Shaqueir Tardif
+ * Written by Shaqueir Tardif and Aiden Gula
  * 1/17/2019
  */
 
