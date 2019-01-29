@@ -14,6 +14,8 @@
 #include "HCSR04.h"
 
 int duty=0;
+float leftmotorCounter=0;
+float rightmotorCounter = 0;
 
 byte dimmerValue=0;
 int timeOut =0;
@@ -35,6 +37,7 @@ ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
 ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter , setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne);
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo);
+ZUNO_SETUP_ISR_ZEROX(Encoder_reset);
 
 Action state;
 void setter(byte newValue){
@@ -74,7 +77,7 @@ void setup() {
   Serial.begin(9600);
   zunoExtIntMode(ZUNO_EXT_INT0, RISING);
   zunoExtIntMode(ZUNO_EXT_INT1, RISING);
-  
+  zunoExtIntMode(ZUNO_EXT_ZEROX, RISING);
   
   
   
@@ -108,7 +111,7 @@ void setup() {
 
 
 void loop(){
-
+    
     switch(state){
         case STOP:
             handler.motorStop();
@@ -130,11 +133,16 @@ void loop(){
 
       
     }
+    
+    //delay(2000);
+    Serial.print("Left Motor: ");
+    Serial.println(leftmotorCounter);
+    Serial.print("Right Motor:");
+    Serial.println(rightmotorCounter);
 
     
   
 
-  
 
 
 
@@ -145,15 +153,32 @@ void timer_handler(){
 
    if(timeOut == 300){
       sensorHandler.setTrigger();
-      Serial.println(sensorHandler.ping());
+      //Serial.println(sensorHandler.ping());
    }
    timeOut = (timeOut+1)%301;
 }
 
 void Encoder_handlerOne(){
+    leftmotorCounter += (1.00/20.00);
 
 }
 void Encoder_handlerTwo(){
+    rightmotorCounter +=(1.00/20.00);
   
 }
 
+void Encoder_reset(){
+//  if (leftmotorCounter == 10.00){
+//    leftmotorCounter = 0.00;
+//    rightmotorCounter = 0.00;
+
+  
+  if(leftmotorCounter == 10.00 && state == UP || state == DOWN){
+  
+  handler.motorStop();
+  leftmotorCounter = 0.00;
+  rightmotorCounter = 0.00;
+  
+  }
+ 
+}
