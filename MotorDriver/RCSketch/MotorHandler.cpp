@@ -3,6 +3,15 @@
 
 
 
+void MotorHandler::leftMotor(int duty){
+	analogWrite(14,duty);
+}
+void MotorHandler::rightMotor(int duty){
+	analogWrite(15,duty);
+	
+	
+}
+
 void MotorHandler::motorForward(int duty){
    digitalWrite(22,HIGH); //1     11,12 control right motor
    digitalWrite(21,LOW);  //0
