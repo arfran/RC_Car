@@ -34,7 +34,7 @@ ZUNO_SETUP_ISR_INT0(Encoder_handlerOne);
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
 
 PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
-PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd, DIRECT); 
+PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd,DIRECT); 
 typedef enum{
   FORWARD= 20,
   BACKWARD=40,
@@ -53,6 +53,8 @@ void setter(byte newValue){
       case 0:
           state = STOP;
           handler.motorStop();
+          leftmotorCounter=0;
+          rightmotorCounter=0;
         break;
       case 10:
         state = LEFT;
@@ -67,7 +69,7 @@ void setter(byte newValue){
         handler.motorRight(dutyCycle);
         break;
       case 40:
-        state = LEFT;
+        state = BACKWARD;
         handler.motorReverse(dutyCycle);
         break;
       default:
@@ -91,6 +93,8 @@ void setup() {
   zunoExtIntMode(ZUNO_EXT_INT1, RISING);
   mypid1.SetMode(AUTOMATIC);
   mypid2.SetMode(AUTOMATIC);
+  mypid1.SetOutputLimits(100,255);
+  mypid2.SetOutputLimits(100,255);
 
   
   
@@ -129,18 +133,18 @@ void loop(){ //motor Sync Function
     if(state == FORWARD || state == BACKWARD){
       
     
-     // mypid1.Compute();
-      //mypid2.Compute();
-      handler.leftMotor((int)dutyCycleLeft);
-      handler.rightMotor((int)dutyCycleRight);
-      Serial.print("Motor Left: ");
-      Serial.print(leftmotorCounter);
-      Serial.print(" ");
-      Serial.println(dutyCycleLeft);
-      Serial.print("Motor Right: ");
-      Serial.print(rightmotorCounter);
-      Serial.println(" ");
-      Serial.print(dutyCycleRight);
+       mypid1.Compute();
+       mypid2.Compute();
+       handler.leftMotor((int)dutyCycleLeft);
+       handler.rightMotor((int)dutyCycleRight);
+       Serial.print("Motor Left: ");
+       Serial.print(leftmotorCounter);
+       Serial.print(" ");
+       Serial.println(dutyCycleLeft);
+       Serial.print("Motor Right: ");
+       Serial.print(rightmotorCounter);
+       Serial.print(" ");
+       Serial.println(dutyCycleRight);
     }
 
 //	if(leftmotorCounter % 4 ==0){ //for every pass of the 4th encoder node
