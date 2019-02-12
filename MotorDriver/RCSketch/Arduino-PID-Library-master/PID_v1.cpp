@@ -1,20 +1,20 @@
 /**********************************************************************************************
- * Arduino PID Library - Version 1.1.1
+ * Arduino PID Library - Version 1.2.1
  * by Brett Beauregard <br3ttb@gmail.com> brettbeauregard.com
  *
- * This Library is licensed under a GPLv3 License
+ * This Library is licensed under the MIT License
  **********************************************************************************************/
 
 #include "Arduino.h"
+#include<PID_v1.h>
 
-#include <PID_v1.h>
 
 /*Constructor (...)*********************************************************
  *    The parameters specified here are those for for which we can't set up
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
 PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd,  int ControllerDirection)
+        double Kp, double Ki, double Kd,int ControllerDirection)
 {
     myOutput = Output;
     myInput = Input;
@@ -37,15 +37,15 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  *    to use Proportional on Error without explicitly saying so
  ***************************************************************************/
 
-/*PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd, int ControllerDirection)
-    :PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, P_ON_E, ControllerDirection)
-{
+//PID::PID(double* Input, double* Output, double* Setpoint,
+ //       double Kp, double Ki, double Kd, int ControllerDirection)
+//    :PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, P_ON_E, ControllerDirection)
+//{
 
-}	*/
+//}
 
 
-/* () **********************************************************************
+/* Compute() **********************************************************************
  *     This, as they say, is where the magic happens.  this function should be called
  *   every time "void loop()" executes.  the function will decide for itself whether a new
  *   pid Output needs to be computed.  returns true when the output is computed,
@@ -120,9 +120,9 @@ void PID::SetTunings(double Kp, double Ki, double Kd, int POn)
 /* SetTunings(...)*************************************************************
  * Set Tunings using the last-rembered POn setting
  ******************************************************************************/
-/*void PID::SetTunings(double Kp, double Ki, double Kd){
+void PID::SetTunings(double Kp, double Ki, double Kd){
     SetTunings(Kp, Ki, Kd, pOn); 
-}*/
+}
 
 /* SetSampleTime(...) *********************************************************
  * sets the period, in Milliseconds, at which the calculation is performed
@@ -200,7 +200,7 @@ void PID::SetControllerDirection(int Direction)
 {
    if(inAuto && Direction !=controllerDirection)
    {
-	    kp = (0 - kp);
+	  kp = (0 - kp);
       ki = (0 - ki);
       kd = (0 - kd);
    }
