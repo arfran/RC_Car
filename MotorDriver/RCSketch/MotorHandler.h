@@ -1,4 +1,4 @@
-#include "Arduino.h"
+include "Arduino.h"
 
 class MotorHandler{
   public:
@@ -10,16 +10,14 @@ class MotorHandler{
 	  void motorRight(int duty);
     void motorStop();
 	  MotorHandler();
-
-   private:
-    int M1HB1;
-    int M1HB2;
-    int M2HB1;
-    int M2HB2;
-    int M1PWM;
-    int M2PWM;
     
 
-
+   private:
+    int LeftHB1 = 19;
+    int LeftHB2 = 20;
+    int RightHB1 = 21;
+    int RightHB2 = 22;
+    int LeftPWM = 14;
+    int RightPWM = 15;
   
 };
