@@ -2,6 +2,8 @@
 
 class MotorHandler{
   public:
+    void leftMotor(int duty);
+    void rightMotor(int duty);
 	  void motorForward(int duty);
 	  void motorReverse(int duty);
 	  void motorLeft(int duty);
