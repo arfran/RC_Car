@@ -120,13 +120,13 @@ void loop(){
             handler.motorLeft(255);
             break;
         case UP:
-            handler.motorForward(255);
+            handler.motorReverse(255); //inverted for some reason
             break;
         case RIGHT:
             handler.motorRight(255);
             break;
         case DOWN:
-            handler.motorReverse(255);
+            handler.motorForward(255);//inverted for some reason
             break;
         default:
             break;
