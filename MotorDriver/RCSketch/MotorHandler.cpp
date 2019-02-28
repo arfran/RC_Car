@@ -37,10 +37,11 @@ void MotorHandler::motorReverse(int duty){
 void MotorHandler::motorLeft(int duty){
    digitalWrite(22,HIGH);  //1
    digitalWrite(21,LOW);   //0
-   analogWrite(15,duty); //right
+   //int t = duty/3;
+   analogWrite(15,100); //right
    digitalWrite(20,LOW);    //1, make left wheels turn reverse for larger pivot
    digitalWrite(19,HIGH);    //0
-   analogWrite(14,(duty/2)); //left; cut duty cycle by half to allow the car to effectively turn better
+   analogWrite(14,(duty)); //left; cut duty cycle by half to allow the car to effectively turn better
 
   
 }
@@ -49,10 +50,11 @@ void MotorHandler::motorRight(int duty){
 
   digitalWrite(22,LOW); //1, make right wheel turn reverse for larger pivot
   digitalWrite(21,HIGH); //0
-  analogWrite(15,(duty/2)); //right; cut duty cycle by half to allow the car to effectively turn better
+  analogWrite(15,(duty)); //right; cut duty cycle by half to allow the car to effectively turn better
   digitalWrite(20,HIGH); //1
   digitalWrite(19,LOW);  //0
-  analogWrite(14,duty); //left
+  //int t = duty/3;
+  analogWrite(14,100); //left
 
   
 }

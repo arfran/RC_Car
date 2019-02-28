@@ -134,7 +134,30 @@ void setup() {
 
 
 
+<<<<<<< HEAD
+void loop(){
+    
+    switch(state){
+        case STOP:
+            handler.motorStop();
+            break;
+        case LEFT:
+            handler.motorLeft(255);
+            break;
+        case UP:
+            handler.motorReverse(255); //inverted for some reason
+            break;
+        case RIGHT:
+            handler.motorRight(255);
+            break;
+        case DOWN:
+            handler.motorForward(255);//inverted for some reason
+            break;
+        default:
+            break;
+=======
 void loop(){ //motor Sync Function
+>>>>>>> ba81c7298560b37d7cd04ede532f6fcb0739104a
 
     if(state == FORWARD || state == BACKWARD){
       
