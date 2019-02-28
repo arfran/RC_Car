@@ -21,6 +21,8 @@ double leftmotorCounter=0;
 double rightmotorCounter = 0;
 double dutyCycleLeft=200;
 double dutyCycleRight=200;
+double targetLeftEncoder = 0;
+double targetRightEncoder = 0;
 float currentDistance;
 byte dimmerValue=0;
 int timeOut =0;
@@ -33,8 +35,8 @@ ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter , setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne);
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
 
-PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
-PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd,DIRECT); 
+PID mypid1(&leftmotorCounter,&dutyCycleLeft, &targetLeftEncoder,aggKp,aggKi,aggKd,DIRECT);
+PID mypid2(&rightmotorCounter, &dutyCycleRight, &targetRightEncoder, aggKp, aggKi, aggKd,DIRECT); 
 typedef enum{
   FORWARD= 20,
   BACKWARD=40,
@@ -62,6 +64,8 @@ void setter(byte newValue){
         break;
       case 20:
         state = FORWARD;
+        targetLeftEncoder += 300;
+        targetRightEncoder += 300;
         handler.motorForward(dutyCycle);
         break;
       case 30:
@@ -70,6 +74,8 @@ void setter(byte newValue){
         break;
       case 40:
         state = BACKWARD;
+        targetLeftEncoder += 300;
+        targetRightEncoder += 300;
         handler.motorReverse(dutyCycle);
         break;
       default:
@@ -137,6 +143,7 @@ void loop(){ //motor Sync Function
        mypid2.Compute();
        handler.leftMotor((int)dutyCycleLeft);
        handler.rightMotor((int)dutyCycleRight);
+       
        Serial.print("Motor Left: ");
        Serial.print(leftmotorCounter);
        Serial.print(" ");
@@ -145,23 +152,13 @@ void loop(){ //motor Sync Function
        Serial.print(rightmotorCounter);
        Serial.print(" ");
        Serial.println(dutyCycleRight);
+       if(leftmotorCounter == targetLeftEncoder || rightmotorCounter == targetRightEncoder){ //encoders have reached target therefore we can stop
+          handler.motorStop();
+          leftmotorCounter , rightmotorCounter , targetRightEncoder, targetLeftEncoder = 0;
+       }
     }
+}
 
-//	if(leftmotorCounter % 4 ==0){ //for every pass of the 4th encoder node
-//			int diff = (leftmotorCounter - rightmotorCounter);
-//			if(diff > 0){
-//          dutyCycle += 1 * (diff+5); //will only increment by 1 during this run; wouldn't have much effect
-//          if (dutyCycle > 255){
-//              dutyCycle = 200;}
-//          handler.rightMotor(dutyCycle);
-//			}
-//			else{
-//			    dutyCycle += 1* (diff+5);
-//          if (dutyCycle > 255){
-//              dutyCycle = 200;}
-//          handler.leftMotor(dutyCycle);
-//			}
-//	}
 
 
 
