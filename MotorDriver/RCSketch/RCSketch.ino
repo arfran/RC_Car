@@ -1,3 +1,9 @@
+#include <ZUNO_SERVO.h>
+
+
+
+
+
 
 
 /* ECE 458
@@ -134,30 +140,7 @@ void setup() {
 
 
 
-<<<<<<< HEAD
-void loop(){
-    
-    switch(state){
-        case STOP:
-            handler.motorStop();
-            break;
-        case LEFT:
-            handler.motorLeft(255);
-            break;
-        case UP:
-            handler.motorReverse(255); //inverted for some reason
-            break;
-        case RIGHT:
-            handler.motorRight(255);
-            break;
-        case DOWN:
-            handler.motorForward(255);//inverted for some reason
-            break;
-        default:
-            break;
-=======
 void loop(){ //motor Sync Function
->>>>>>> ba81c7298560b37d7cd04ede532f6fcb0739104a
 
     if(state == FORWARD || state == BACKWARD){
       
@@ -192,30 +175,22 @@ void loop(){ //motor Sync Function
 
 
   
-}
+
 
 void timer_handler(){
 
-//   if(timeOut == 10000){
-//        Serial.print("Right Counter ");
-//        Serial.println(((float)(leftmotorCounter/20))*6);
-//        Serial.print("Left Counter ");
-//        Serial.println(((float)(rightmotorCounter/20))*6);
-//        timeOut = 0;
-//        dutyCycle += 10;
-//        if(dutyCycle >255)
-//            dutyCycle = 200;
-//        leftmotorCounter =0;
-//        rightmotorCounter = 0;
-//        handler.motorForward(dutyCycle);
-//        
-//   }
-//   timeOut++;
+   if(timeOut == 300){
+        sensorHandler.setTrigger();
+        float dis = sensorHandler.ping();
+        Serial.println(dis);
+        
+   }
+   timeOut++;
     
     
 
-//   }
-//   timeOut = (timeOut+1)%301;
+  
+   timeOut = (timeOut+1)%301;
 }
 
 void Encoder_handlerOne(){
