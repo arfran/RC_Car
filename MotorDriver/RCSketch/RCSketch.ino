@@ -144,11 +144,17 @@ void loop(){ //motor Sync Function
 
     if(state == FORWARD || state == BACKWARD){
       
-    
+      
        mypid1.Compute();
        mypid2.Compute();
        handler.leftMotor((int)dutyCycleLeft);
        handler.rightMotor((int)dutyCycleRight);
+
+       
+       if(currentDistance <= 2)
+       {
+         handler.motorStop();
+       }
        
        Serial.print("Motor Left: ");
        Serial.print(leftmotorCounter);
@@ -178,19 +184,13 @@ void loop(){ //motor Sync Function
 
 
 void timer_handler(){
-
-   if(timeOut == 300){
-        sensorHandler.setTrigger();
-        float dis = sensorHandler.ping();
-        Serial.println(dis);
-        
+   float distance;
+   if(timeOut == 100){
+      distanceCheck();
    }
    timeOut++;
-    
-    
-
   
-   timeOut = (timeOut+1)%301;
+   timeOut = (timeOut+1)%101;
 }
 
 void Encoder_handlerOne(){
@@ -199,5 +199,13 @@ void Encoder_handlerOne(){
 }
 void Encoder_handlerTwo(){
     rightmotorCounter ++;
+  
+}
+
+void distanceCheck()
+{
+  sensorHandler.setTrigger();
+  currentDistance = sensorHandler.ping();
+  Serial.println(currentDistance);
   
 }
