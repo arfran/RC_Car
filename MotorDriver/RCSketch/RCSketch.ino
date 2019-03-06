@@ -1,4 +1,4 @@
-#include <ZUNO_SERVO.h>
+
 
 
 
@@ -21,6 +21,7 @@
 #include "MotorHandler.h"
 #include "HCSR04.h"
 #include <PID_v1.h>
+#include <ZUNO_SERVO.h>
 
 int duty=0;
 double leftmotorCounter=0;
@@ -34,6 +35,7 @@ byte dimmerValue=0;
 int timeOut =0;
 int dutyCycle = 200;
 double aggKp=4, aggKi=0.2, aggKd=1;
+ServoController servo(16); // PWM1 pin
 MotorHandler handler;
 HCSR04 sensorHandler;
 ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
@@ -57,7 +59,7 @@ Action state;
 
 void setter(byte newValue){
 	  dimmerValue = newValue;
-    switch(newValue){
+    switch(dimmerValue){
       case 0:
           state = STOP;
           handler.motorStop();
@@ -107,6 +109,7 @@ void setup() {
   mypid2.SetMode(AUTOMATIC);
   mypid1.SetOutputLimits(100,255);
   mypid2.SetOutputLimits(100,255);
+  
 
   
   
@@ -150,10 +153,31 @@ void loop(){ //motor Sync Function
        handler.leftMotor((int)dutyCycleLeft);
        handler.rightMotor((int)dutyCycleRight);
 
-       
+       if (currentDistance <= 10)
+       {
+        servo.begin();
+        while (currentDistance <= 10)
+        {
+          servo.setValue(90);
+          delay(100);
+          servo.setValue(-90);
+          delay(100);
+        }
+       }
+       else
+       {
+        servo.end();
+       }
        if(currentDistance <= 2)
        {
          handler.motorStop();
+         while(currentDistance <= 2)
+         {
+          if(dimmerValue == 20)
+          {
+            dimmerValue = 0;
+          }
+         }
        }
        
        Serial.print("Motor Left: ");
