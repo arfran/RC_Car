@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 /* ECE 458
  * MotorDriver_v4_4_a
  * 
@@ -39,7 +31,7 @@ double leftTemp=0, rightTemp =0;
 ServoController servo(16); // PWM1 pin
 MotorHandler handler;
 HCSR04 sensorHandler;
-//ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
+ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
 ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter , setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne); //
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
@@ -112,6 +104,8 @@ void setup() {
   zunoExtIntMode(ZUNO_EXT_INT1,RISING);
   mypid1.SetMode(AUTOMATIC);
   mypid2.SetMode(AUTOMATIC);
+  pinMode(11, INPUT);
+  pinMode(12,OUTPUT);
 //  mypid1.SetOutputLimits(50,255);
 //  mypid2.SetOutputLimits(50,255);
 //  
@@ -149,55 +143,32 @@ void setup() {
 
 
 void loop(){ //motor Sync Function
-    
+    Serial.println(currentDistance);
     if(state == FORWARD || state == BACKWARD){
       
       
-         mypid1.Compute();
-         mypid2.Compute();
-         handler.leftMotor((int)dutyCycleLeft);
-         handler.rightMotor((int)dutyCycleRight);
-         Serial.print("Motor Left: ");
-         Serial.print(leftmotorCounter);
-         Serial.print(" ");
-         Serial.println(dutyCycleLeft);
-         Serial.print("Motor Right: ");
-         Serial.print(rightmotorCounter);
-         Serial.print(" ");
-         Serial.println(dutyCycleRight);
+         
+//         handler.leftMotor((int)dutyCycleLeft);
+//         handler.rightMotor((int)dutyCycleRight);
+         
+         if(currentDistance <= 7.00)
+         {
+            handler.motorStop();
+            state = STOP;
+            dimmerValue = 0;
+            leftmotorCounter=0;
+            rightmotorCounter=0;
+          }
+//         Serial.print("Motor Left: ");
+//         Serial.print(leftmotorCounter);
+//         Serial.print(" ");
+//         Serial.println(dutyCycleLeft);
+//         Serial.print("Motor Right: ");
+//         Serial.print(rightmotorCounter);
+//         Serial.print(" ");
+//         Serial.println(dutyCycleRight);
 
-//       if (currentDistance <= 10)
-//       {
-//        servo.begin();
-//        while (currentDistance <= 10)
-//        {
-//          servo.setValue(90);
-//          delay(100);
-//          servo.setValue(-90);
-//          delay(100);
-//        }
-//       }
-//       else
-//       {
-//        servo.end();
-//       }
-//       if(currentDistance <= 2)
-//       {
-//         handler.motorStop();
-//         while(currentDistance <= 2)
-//         {
-//          if(dimmerValue == 20)
-//          {
-//            dimmerValue = 0;
-//          }
-//         }
-//       }
-       
 
-//       if(leftmotorCounter == targetLeftEncoder || rightmotorCounter == targetRightEncoder){ //encoders have reached target therefore we can stop
-//          handler.motorStop();
-//          leftmotorCounter , rightmotorCounter , targetRightEncoder, targetLeftEncoder = 0;
-//       }
     }
 }
 
@@ -244,8 +215,11 @@ void Encoder_handlerTwo(){
 
 void distanceCheck()
 {
+  mypid1.Compute();
+  mypid2.Compute();
   sensorHandler.setTrigger();
   currentDistance = sensorHandler.ping();
-  //Serial.println(currentDistance);
-  
+//  Serial.println(currentDistance);
+
+ 
 }

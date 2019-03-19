@@ -2,7 +2,7 @@
 class HCSR04{
 	
 	private:
-		int triggerPin = 12;
+		int triggerPin = 7;
 		s_pin echoPin = 11;
 	public:
 		void setTrigger();
