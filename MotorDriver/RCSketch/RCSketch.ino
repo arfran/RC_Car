@@ -14,14 +14,14 @@
 #include "HCSR04.h"
 #include <PID_v1.h>
 #include <ZUNO_SERVO.h>
-
 int duty=0;
 double leftmotorCounter=0;
-double rightmotorCounter = 0;
+double rightmotorCounter=0;
 double dutyCycleLeft=255;
 double dutyCycleRight=255;
-double targetLeftEncoder = 0;
-double targetRightEncoder = 0;
+int i =0;
+double targetLeftEncoder=0;
+double targetRightEncoder=0;
 float currentDistance;
 byte dimmerValue=0;
 int timeOut =0;
@@ -32,10 +32,12 @@ ServoController servo(16); // PWM1 pin
 MotorHandler handler;
 HCSR04 sensorHandler;
 ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
-ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter , setter));
+
+ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter,setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne); //
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
-//
+
+ZUNO_SETUP_ISR_ZEROX(echoWrapper);
 //PID mypid1(&leftmotorCounter,&dutyCycleLeft, &targetLeftEncoder,aggKp,aggKi,aggKd,DIRECT);
 //PID mypid2(&rightmotorCounter, &dutyCycleRight, &targetRightEncoder, aggKp, aggKi, aggKd,DIRECT); 
 PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
@@ -73,8 +75,7 @@ void setter(byte newValue){
 //        targetLeftEncoder += 300;
 //        targetRightEncoder += 300;
           handler.motorForward(dutyCycle);
-          Serial.print("Forward: ");
-          Serial.println(dutyCycle);
+         
         break;
       case 30:
         state = RIGHT;
@@ -102,12 +103,13 @@ void setup() {
   Serial.begin(9600);
   zunoExtIntMode(ZUNO_EXT_INT0,RISING);
   zunoExtIntMode(ZUNO_EXT_INT1,RISING);
+  zunoExtIntMode(ZUNO_EXT_ZEROX,RISING);
   mypid1.SetMode(AUTOMATIC);
   mypid2.SetMode(AUTOMATIC);
   pinMode(11, INPUT);
   pinMode(12,OUTPUT);
-//  mypid1.SetOutputLimits(50,255);
-//  mypid2.SetOutputLimits(50,255);
+  mypid1.SetOutputLimits(50,255);
+  mypid2.SetOutputLimits(50,255);
 //  
 
   
@@ -143,15 +145,19 @@ void setup() {
 
 
 void loop(){ //motor Sync Function
-    Serial.println(currentDistance);
+    Serial.println(sensorHandler.getCm());
+    delay(1000);
+   
     if(state == FORWARD || state == BACKWARD){
       
       
+         mypid1.Compute();
+         mypid2.Compute();
+         handler.leftMotor((int)dutyCycleLeft);
+         handler.rightMotor((int)dutyCycleRight);
+         Serial.println(i);
          
-//         handler.leftMotor((int)dutyCycleLeft);
-//         handler.rightMotor((int)dutyCycleRight);
-         
-         if(currentDistance <= 7.00)
+         if(sensorHandler.getCm() <= 7.00)
          {
             handler.motorStop();
             state = STOP;
@@ -187,7 +193,7 @@ void loop(){ //motor Sync Function
 void timer_handler(){
    float distance;
    if(timeOut == 100){
-      distanceCheck();
+      sensorHandler.setTrigger();
    }
    timeOut++;
   
@@ -213,13 +219,9 @@ void Encoder_handlerTwo(){
 
 }
 
-void distanceCheck()
-{
-  mypid1.Compute();
-  mypid2.Compute();
-  sensorHandler.setTrigger();
-  currentDistance = sensorHandler.ping();
-//  Serial.println(currentDistance);
 
- 
+
+void echoWrapper(){
+    sensorHandler.echoChange();
+
 }
