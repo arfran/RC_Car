@@ -25,6 +25,7 @@ double targetRightEncoder=0;
 float currentDistance;
 byte dimmerValue=0;
 int timeOut =0;
+int pidTimmer = 0;
 int dutyCycle = 200;
 double aggKp=4, aggKi=0.2, aggKd=1;
 double leftTemp=0, rightTemp =0;
@@ -32,6 +33,7 @@ ServoController servo(16); // PWM1 pin
 MotorHandler handler;
 HCSR04 sensorHandler;
 ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
+//ZUNO_SETUP_ISR_GPTIMER(pid_handler);
 
 ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter,setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne); //
@@ -103,7 +105,8 @@ void setup() {
   Serial.begin(9600);
   zunoExtIntMode(ZUNO_EXT_INT0,RISING);
   zunoExtIntMode(ZUNO_EXT_INT1,RISING);
-  zunoExtIntMode(ZUNO_EXT_ZEROX,RISING);
+  zunoExtIntMode(ZUNO_EXT_ZEROX,CHANGE);
+  zunoGPTInit(ZUNO_GPT_SCALE1024);
   mypid1.SetMode(AUTOMATIC);
   mypid2.SetMode(AUTOMATIC);
   pinMode(11, INPUT);
@@ -145,19 +148,18 @@ void setup() {
 
 
 void loop(){ //motor Sync Function
-    Serial.println(sensorHandler.getCm());
-    delay(1000);
-   
+//    
+//    Serial.println(sensorHandler.getCm());
+//    delay(1000);
+
     if(state == FORWARD || state == BACKWARD){
+       
       
-      
-         mypid1.Compute();
-         mypid2.Compute();
          handler.leftMotor((int)dutyCycleLeft);
          handler.rightMotor((int)dutyCycleRight);
-         Serial.println(i);
+       
          
-         if(sensorHandler.getCm() <= 7.00)
+         if(sensorHandler.getInches() <= 7.00)
          {
             handler.motorStop();
             state = STOP;
@@ -185,7 +187,17 @@ void loop(){ //motor Sync Function
   
 
 
+void pid_handler(){
 
+  if(pidTimmer == 10 && (state == FORWARD || state == BACKWARD)){
+     mypid1.Compute();
+     mypid2.Compute();
+    pidTimmer =0;
+          
+   }
+   pidTimmer++;
+  
+}
 
   
 
@@ -194,8 +206,9 @@ void timer_handler(){
    float distance;
    if(timeOut == 100){
       sensorHandler.setTrigger();
+      
+         
    }
-   timeOut++;
   
    timeOut = (timeOut+1)%101;
 }
@@ -222,6 +235,7 @@ void Encoder_handlerTwo(){
 
 
 void echoWrapper(){
+
     sensorHandler.echoChange();
 
 }

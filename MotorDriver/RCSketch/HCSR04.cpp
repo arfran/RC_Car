@@ -9,7 +9,7 @@ void HCSR04::setTrigger(){ // sends pulse to trigger to initiate reading
 }
 
 HCSR04::HCSR04(){
-    this->cm = 0;
+    this->inches = 0;
 //  pinMode(this->echoPin, INPUT);
 //  pinMode(this->triggerPin,OUTPUT);
 }
@@ -21,19 +21,36 @@ float HCSR04::ping(){
 }
 
 void HCSR04::echoChange(){
-    if(!state){
-        this->startTime = millis();  
-        state++;    
-    }
-    else{
-       this->endTime = millis();
-       this->cm = ((endTime-startTime)/2)/74;
-       state--;
+    switch(digitalRead(3)){
+        
+        case HIGH:
+          this->endTime = 0;
+          this->startTime = millis()*1000.0;
+          break;
+
+        case LOW:
+          this->endTime = millis()*1000.0;
+          //Serial.println(this->endTime);
+          
+          this->inches = (this->endTime - this->startTime)/148.0;
+          //this->inches = (this->endTime - this->startTime)*340.0/2.0;
+          //this->inches*=100.0;
+          Serial.println(this->inches);
+          break;
+
+        default:
+          break;
     }
 
   
 }
-long HCSR04::getCm(){
+float HCSR04::getInches(){
 
-  return this->cm;
+  return this->inches;
+}
+float HCSR04::getStart(){
+  return this->startTime;
+}
+float HCSR04::getEnd(){
+  return this->endTime;
 }
