@@ -5,8 +5,8 @@
  * Modifications to accompany the change from the Arduino 101 microcontroller
  * to the Z-Uno development board
  * 
- * Written by Shaqueir Tardif and Aiden Gula
- * 1/17/2019
+ * Written by Shaqueir Tardif, Aiden Gula, and Adam Francoeur
+ * 3/21/2019
  */
 
 #include "Arduino.h"
@@ -22,7 +22,7 @@ double dutyCycleRight=255;
 int i =0;
 double targetLeftEncoder=0;
 double targetRightEncoder=0;
-float currentDistance;
+long currentDistance;
 byte dimmerValue=0;
 int timeOut =0;
 int pidTimmer = 0;
@@ -31,15 +31,15 @@ double aggKp=4, aggKi=0.2, aggKd=1;
 double leftTemp=0, rightTemp =0;
 ServoController servo(16); // PWM1 pin
 MotorHandler handler;
-HCSR04 sensorHandler;
+HCSR04 sensorHandler; // renames
 ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
-//ZUNO_SETUP_ISR_GPTIMER(pid_handler);
+ZUNO_SETUP_ISR_GPTIMER(pid_handler);
 
 ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter,setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne); //
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
 
-ZUNO_SETUP_ISR_ZEROX(echoWrapper);
+//ZUNO_SETUP_ISR_ZEROX(echoWrapper);
 //PID mypid1(&leftmotorCounter,&dutyCycleLeft, &targetLeftEncoder,aggKp,aggKi,aggKd,DIRECT);
 //PID mypid2(&rightmotorCounter, &dutyCycleRight, &targetRightEncoder, aggKp, aggKi, aggKd,DIRECT); 
 PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
@@ -159,7 +159,7 @@ void loop(){ //motor Sync Function
          handler.rightMotor((int)dutyCycleRight);
        
          
-         if(sensorHandler.getInches() <= 7.00)
+         if(currentDistance <= 7.00)
          {
             handler.motorStop();
             state = STOP;
@@ -206,7 +206,7 @@ void timer_handler(){
    float distance;
    if(timeOut == 100){
       sensorHandler.setTrigger();
-      
+      currentDistance = sensorHandler.ping();
          
    }
   
@@ -237,5 +237,6 @@ void Encoder_handlerTwo(){
 void echoWrapper(){
 
     sensorHandler.echoChange();
+    //sensorHandler.ping();
 
 }

@@ -10,7 +10,7 @@ class HCSR04{
     int state;
 	public:
 		void setTrigger();
-		float ping();
+		long ping();
     void echoChange();
     float getInches();
     float getStart();

@@ -14,9 +14,12 @@ HCSR04::HCSR04(){
 //  pinMode(this->triggerPin,OUTPUT);
 }
 
-float HCSR04::ping(){
-	long duration = pulseIn(11,HIGH,1000);
-	return (duration/2) / 74; // converts to inches
+long HCSR04::ping(){
+	long duration = pulseIn(11,HIGH,1000000); //pulseIn(11,HIGH,1000)
+  //Serial.println(duration);
+  long test = (duration/2) / 74; // converts to inches
+  Serial.println(test);
+	return test;
 	
 }
 
@@ -35,7 +38,7 @@ void HCSR04::echoChange(){
           this->inches = (this->endTime - this->startTime)/148.0;
           //this->inches = (this->endTime - this->startTime)*340.0/2.0;
           //this->inches*=100.0;
-          Serial.println(this->inches);
+          //Serial.println(this->inches);
           break;
 
         default:
