@@ -18,7 +18,7 @@ long HCSR04::ping(){
 	long duration = pulseIn(11,HIGH,1000000); //pulseIn(11,HIGH,1000)
   //Serial.println(duration);
   long test = (duration/2) / 74; // converts to inches
-  Serial.println(test);
+  //Serial.println(test);
 	return test;
 	
 }

@@ -111,8 +111,8 @@ void setup() {
   mypid2.SetMode(AUTOMATIC);
   pinMode(11, INPUT);
   pinMode(12,OUTPUT);
-  mypid1.SetOutputLimits(50,255);
-  mypid2.SetOutputLimits(50,255);
+  mypid1.SetOutputLimits(0,125);
+  mypid2.SetOutputLimits(0,125);
 //  
 
   
@@ -151,22 +151,30 @@ void loop(){ //motor Sync Function
 //    
 //    Serial.println(sensorHandler.getCm());
 //    delay(1000);
-
+    if(leftmotorCounter >= 100 && rightmotorCounter >= 100){
+            state = STOP;
+            handler.motorStop();
+            dimmerValue= 0;
+            leftmotorCounter =0;
+            rightmotorCounter =0;
+          }
     if(state == FORWARD || state == BACKWARD){
        
       
          handler.leftMotor((int)dutyCycleLeft);
          handler.rightMotor((int)dutyCycleRight);
        
-         
-         if(currentDistance <= 7.00)
+        
+         if(currentDistance <= 15.00)
          {
-            handler.motorStop();
             state = STOP;
+            handler.motorStop();
             dimmerValue = 0;
             leftmotorCounter=0;
             rightmotorCounter=0;
           }
+
+          
 //         Serial.print("Motor Left: ");
 //         Serial.print(leftmotorCounter);
 //         Serial.print(" ");
@@ -204,9 +212,11 @@ void pid_handler(){
 
 void timer_handler(){
    float distance;
+ 
    if(timeOut == 100){
       sensorHandler.setTrigger();
       currentDistance = sensorHandler.ping();
+      Serial.println(leftmotorCounter);
          
    }
   
@@ -214,6 +224,9 @@ void timer_handler(){
 }
 
 void Encoder_handlerOne(){
+    if(state == STOP){
+      return;
+    }
     leftTemp++;
     if((int)leftTemp % 20 ==0){
       leftmotorCounter++;
@@ -224,6 +237,9 @@ void Encoder_handlerOne(){
 
 }
 void Encoder_handlerTwo(){
+  if(state == STOP){
+    return;
+  }
     rightTemp++;
     if((int)rightTemp % 20 ==0){
       rightmotorCounter++;
