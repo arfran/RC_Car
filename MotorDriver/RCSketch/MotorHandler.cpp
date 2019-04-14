@@ -71,10 +71,10 @@ MotorHandler::MotorHandler(){
 }
 
 void MotorHandler::motorStop(){
-  digitalWrite(22,LOW);
-  digitalWrite(21,LOW);
-  digitalWrite(20,LOW);
-  digitalWrite(19,LOW);
+  digitalWrite(22,HIGH);
+  digitalWrite(21,HIGH);
+  digitalWrite(20,HIGH);
+  digitalWrite(19,HIGH);
   analogWrite(15,255);
   analogWrite(14,255);
 

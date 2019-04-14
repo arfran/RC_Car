@@ -39,6 +39,7 @@ void HCSR04::echoChange(){
           //this->inches = (this->endTime - this->startTime)*340.0/2.0;
           //this->inches*=100.0;
           //Serial.println(this->inches);
+          
           break;
 
         default:
