@@ -28,17 +28,15 @@ void HCSR04::echoChange(){
         
         case HIGH:
           this->endTime = 0;
-          this->startTime = millis()*1000.0;
+          this->startTime = millis();
           break;
 
         case LOW:
-          this->endTime = millis()*1000.0;
+          this->endTime = millis();
           //Serial.println(this->endTime);
-          
-          this->inches = (this->endTime - this->startTime)/148.0;
+          this->inches = ((this->endTime - this->startTime)*1000.0)/148.0;
           //this->inches = (this->endTime - this->startTime)*340.0/2.0;
-          //this->inches*=100.0;
-          //Serial.println(this->inches);
+          // Serial.println(this->inches);
           
           break;
 

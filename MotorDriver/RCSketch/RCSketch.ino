@@ -14,25 +14,26 @@
 #include "HCSR04.h"
 #include <PID_v1.h>
 
-#include "ServoHanlder.h"
+//#include "ServoHandler.h"
 int duty=0;
 double leftmotorCounter=0;
 double rightmotorCounter=0;
 double dutyCycleLeft=255;
 double dutyCycleRight=255;
+double target = 200;
 int i =0;
 double targetLeftEncoder=0;
 double targetRightEncoder=0;
-long currentDistance;
+long currentDistance=0;
 byte dimmerValue=0;
-ServoHandler servoController(8);
+//ServoHandler servoController(8);
 int timeOut =0;
 int pidTimer = 0;
 int dutyCycle = 200;
 double aggKp=4, aggKi=0.2, aggKd=1;
 double leftTemp=0, rightTemp =0;
 int echoFlag=0;
-
+ 
 MotorHandler handler;
 HCSR04 sensorHandler; // renames
 ZUNO_SETUP_ISR_1MSTIMER(timer_handler);
@@ -42,11 +43,14 @@ ZUNO_SETUP_CHANNELS(ZUNO_SWITCH_MULTILEVEL(getter,setter));
 ZUNO_SETUP_ISR_INT0(Encoder_handlerOne); //
 ZUNO_SETUP_ISR_INT1(Encoder_handlerTwo); 
 
-ZUNO_SETUP_ISR_ZEROX(echoWrapper);
+//ZUNO_SETUP_ISR_ZEROX(echoWrapper);
 //PID mypid1(&leftmotorCounter,&dutyCycleLeft, &targetLeftEncoder,aggKp,aggKi,aggKd,DIRECT);
 //PID mypid2(&rightmotorCounter, &dutyCycleRight, &targetRightEncoder, aggKp, aggKi, aggKd,DIRECT); 
+//PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
+//PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd,DIRECT); 
 PID mypid1(&leftmotorCounter,&dutyCycleLeft, &rightmotorCounter,aggKp,aggKi,aggKd,DIRECT);
-PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd,DIRECT); 
+PID mypid2(&rightmotorCounter, &dutyCycleRight, &leftmotorCounter, aggKp, aggKi, aggKd,DIRECT);
+ 
 typedef enum{
   FORWARD= 20,
   BACKWARD=40,
@@ -68,6 +72,7 @@ void setter(byte newValue){
       case 0:
           state = STOP;
           handler.motorStop();
+
           leftmotorCounter=0;
           rightmotorCounter=0;
         break;
@@ -112,14 +117,17 @@ void setup() {
   Serial.begin(9600);
   zunoExtIntMode(ZUNO_EXT_INT0,RISING);
   zunoExtIntMode(ZUNO_EXT_INT1,RISING);
-  zunoExtIntMode(ZUNO_EXT_ZEROX,CHANGE);
-  zunoGPTInit(ZUNO_GPT_SCALE1024);
+  //zunoExtIntMode(ZUNO_EXT_ZEROX,CHANGE);
   mypid1.SetMode(AUTOMATIC);
   mypid2.SetMode(AUTOMATIC);
   pinMode(11, INPUT);
   pinMode(12,OUTPUT);
-  mypid1.SetOutputLimits(0,85);
-  mypid2.SetOutputLimits(0,85);
+  zunoGPTInit(ZUNO_GPT_CYCLIC); 
+  zunoGPTEnable(1);
+  zunoGPTSet(65000);
+  
+  //mypid1.SetOutputLimits(0,70);
+  //mypid2.SetOutputLimits(0,70);
 //  
 
   
@@ -158,37 +166,43 @@ void loop(){ //motor Sync Function
       
     
     
-
-      if((leftmotorCounter >= 100 && rightmotorCounter >= 100) && (state == FORWARD || state == BACKWARD)) {
-            state = STOP;
-            handler.motorStop();
-            dimmerValue= 0;
-            leftmotorCounter =0;
-            rightmotorCounter =0;
+      
+      if((leftmotorCounter >= 200  && rightmotorCounter >= 200) && (state == FORWARD || state == BACKWARD)) {
+            
+//            Serial.println(leftmotorCounter);
+//            Serial.println(rightmotorCounter);
+//            
+              state = STOP;
+              handler.motorStop();
+              dimmerValue= 0;
+              leftmotorCounter=0;
+              rightmotorCounter=0;
+            
       }
       if((leftmotorCounter >= 20 && rightmotorCounter >= 20) && (state == LEFT || state == RIGHT)){
             state = STOP;
             handler.motorStop();
             dimmerValue = 0;
-            leftmotorCounter = 0;
-            rightmotorCounter  = 0;
-      }
-    if(state == FORWARD || state == BACKWARD){
-       
-      
-         handler.leftMotor((int)dutyCycleLeft);
-         handler.rightMotor((int)dutyCycleRight);
-            
-         float inches = sensorHandler.getInches();
-         if(inches <= 7)
-         {
-            
-            state = STOP;
-            handler.motorStop();
-            dimmerValue = 0;
             leftmotorCounter=0;
             rightmotorCounter=0;
-          }
+      }
+    if(state == FORWARD || state == BACKWARD){
+        // mypid1.Compute();
+         //mypid2.Compute();
+         //(int)dutyCycleLeft
+         handler.leftMotor(dutyCycleLeft);
+         handler.rightMotor(dutyCycleRight);
+            
+         //float inches = sensorHandler.getInches();
+//         if(currentDistance <= 5)
+//         {
+//            
+//            state = STOP;
+//            handler.motorStop();
+//            dimmerValue = 0;
+//            leftmotorCounter=0;
+//            rightmotorCounter=0;
+//          }
 
           
 
@@ -205,10 +219,11 @@ void loop(){ //motor Sync Function
 
 void pid_handler(){
 
-  if(pidTimer == 10 && (state == FORWARD || state == BACKWARD)){
-     mypid1.Compute();
-     mypid2.Compute();
-    pidTimer =0;
+  if( (pidTimer == 2) &&( state == FORWARD || state == BACKWARD)){
+       Serial.println("Hello");
+     //  mypid1.Compute();
+//      mypid2.Compute();
+     pidTimer =0;
           
    }
    pidTimer++;
@@ -222,7 +237,13 @@ void timer_handler(){
    
    
    if(timeOut == 100){
-      sensorHandler.setTrigger();
+        Serial.print("Motor Right: ");
+        Serial.println(rightmotorCounter);
+//        Serial.println(leftmotorCounter);
+        Serial.print("Motor Left: ");
+        Serial.println(leftmotorCounter);
+//      sensorHandler.setTrigger();
+//      currentDistance = sensorHandler.ping();
       
    }
 
@@ -236,9 +257,11 @@ void Encoder_handlerOne(){
     }
     leftTemp++;
     if((int)leftTemp % 20 ==0){
-      leftmotorCounter++;
-      leftTemp=0;
+        leftmotorCounter++;
+
+        leftTemp=0;
     }
+    
     
   
 
@@ -250,6 +273,7 @@ void Encoder_handlerTwo(){
     rightTemp++;
     if((int)rightTemp % 20 ==0){
       rightmotorCounter++;
+
       rightTemp =0;
     }
 
